@@ -1,9 +1,20 @@
 import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
+import { initializeAnalytics, trackPageView, trackEvent } from './analytics';
+
+const TrackPage = () => {
+  const location = useLocation();
+  useEffect(() => {
+    trackPageView(location.pathname);
+  }, [location]);
+  return null;
+};
 
 const App = () => {
   const [count, setCount] = useState(0);
 
   useEffect(() => {
+    initializeAnalytics();
     console.info('Componente cargado');
     console.info('Usando loglevel');
 
@@ -23,6 +34,7 @@ const App = () => {
 
   const handleClick = () => {
     console.debug('Botón clickeado');
+    trackEvent('User', 'Clicked Increment Button');
     setCount(prevCount => {
       const newCount = prevCount + 1;
       if (newCount === 5) {
@@ -33,11 +45,14 @@ const App = () => {
   };
 
   return (
-    <div>
-      <h1>React y Logs</h1>
-      <p>Contador: {count}</p>
-      <button onClick={handleClick}>Incrementar</button>
-    </div>
+    <Router>
+      <TrackPage />
+      <div>
+        <h1>React y Logs</h1>
+        <p>Contador: {count}</p>
+        <button onClick={handleClick}>Incrementar</button>
+      </div>
+    </Router>
   );
 };
 
